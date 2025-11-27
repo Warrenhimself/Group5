@@ -15,6 +15,7 @@ $sql = "
     i.item_id,
     i.title,
     i.description,
+     i.image_path,
     a.auction_id,
     COALESCE(a.currentHighestBid, a.start_price) AS current_price,
     a.start_price,
@@ -49,6 +50,7 @@ if ($res->num_rows === 0) {
 }
 
 $row = $res->fetch_assoc();
+$image_path   = $row['image_path'];
 $stmt->close();
 
 $title         = $row['title'];
@@ -104,12 +106,19 @@ if ($has_session) {
   </div>
 </div>
 
-<div class="row">
-  <div class="col-sm-8">
-    <div class="itemDescription">
-      <?php echo nl2br(htmlspecialchars($description)); ?>
-    </div>
+<div class="col-sm-8">
+  <?php if (!empty($image_path)): ?>
+    <img src="<?php echo htmlspecialchars($image_path); ?>" 
+     alt="Item image"
+     class="auction-item-image">
+
+  <?php endif; ?>
+
+  <div class="itemDescription">
+    <?php echo nl2br(htmlspecialchars($description)); ?>
   </div>
+</div>
+
 
   <div class="col-sm-4">
 

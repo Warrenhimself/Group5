@@ -1,2 +1,9 @@
-/* Any custom CSS you would like to specify for your site can go here. */
-
+img.auction-item-image {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 15px;
+  border-radius: 6px;
+}

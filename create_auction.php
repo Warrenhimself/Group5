@@ -27,7 +27,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || $_SESSI
           <label for="auctionDetails" class="col-sm-2 col-form-label text-right">Details</label>
           <div class="col-sm-10">
             <textarea class="form-control" id="auctionDetails" name="description" rows="4" required></textarea>
-            <small id="detailsHelp" class="form-text text-muted">Full details of the listing to help bidders decide if it's what they're looking for.</small>
+            <small id="detailsHelp" class="form-text text-muted"><span class="text-danger">* Required.</span> Full details of the listing to help bidders decide if it's what they're looking for.</small>
           </div>
         </div>
 
@@ -69,7 +69,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || $_SESSI
               </div>
               <input type="number" class="form-control" id="auctionReservePrice" name="reserve_price" step="0.01" min="0">
             </div>
-            <small id="reservePriceHelp" class="form-text text-muted">Optional. Auctions that end below this price will not go through. This value is not displayed in the auction listing.</small>
+            <small id="reservePriceHelp" class="form-text text-muted"> Auctions that end below this price will not go through. This value is not displayed in the auction listing.</small>
           </div>
         </div>
 
@@ -78,12 +78,21 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || $_SESSI
           <label for="auctionImage" class="col-sm-2 col-form-label text-right">Item image</label>
           <div class="col-sm-10">
             <input type="file" class="form-control-file" id="auctionImage" name="item_image" accept="image/*">
-            <small class="form-text text-muted">
-              Optional. Upload a product image (JPG/PNG/GIF, up to ~2MB).
+            <small class="form-text text-muted"><span class="text-danger">* Required.</span>
+               Upload a product image (JPG/PNG/GIF, up to ~2MB).
             </small>
           </div>
         </div>
       
+<div class="form-group row">
+  <label for="auctionStartDate" class="col-sm-2 col-form-label text-right">Start date</label>
+  <div class="col-sm-10">
+    <input type="datetime-local" class="form-control" id="auctionStartDate" name="start_time" min="<?php echo $now_local; ?>" required>
+    <small id="startDateHelp" class="form-text text-muted">
+      <span class="text-danger">* Required.</span> When the auction will open.
+    </small>
+  </div>
+</div>
 
         <div class="form-group row">
           <label for="auctionEndDate" class="col-sm-2 col-form-label text-right">End date</label>

@@ -10,7 +10,6 @@ if (!isset($_GET['item_id']) || !ctype_digit($_GET['item_id'])) {
 
 $item_id = (int)$_GET['item_id'];
 
-/** @var mysqli $mysqli */
 $sql = "
   SELECT 
     i.item_id, 
@@ -248,6 +247,13 @@ if ($has_session) {
               </div>
             <?php endif; ?>
 
+          <?php endif; ?>
+
+          <?php if ($has_session && isset($_SESSION['account_type']) && $_SESSION['account_type'] === 'seller'): ?>
+            <hr>
+            <a href="create_auction.php?copy_item=<?php echo $item_id; ?>" class="btn btn-outline-secondary btn-block sell-like-btn">
+              Sell one like this
+            </a>
           <?php endif; ?>
 
         </div>

@@ -532,3 +532,56 @@
   background-color: #3665f3;
   color: #fff;
 }
+
+.main-nav {
+  background-color: #343a40;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.main-nav .navbar-brand {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.main-nav .nav-link {
+  color: #e4e6ea;
+  font-size: 0.95rem;
+  padding: 0.4rem 0.9rem;
+}
+
+.main-nav .nav-link:hover {
+  color: #ffffff;
+}
+
+.main-nav .nav-cta {
+  border-radius: 999px;
+  border: 1px solid #ffffff;
+  padding: 0.3rem 0.9rem;
+  margin-left: 4px;
+}
+
+.main-nav .nav-cta:hover {
+  background-color: #ffffff;
+  color: #343a40;
+}
+
+.main-nav .btn {
+  font-size: 0.9rem;
+}
+
+.sell-like-btn {
+  color: #000 ;
+  border: 2px solid #000 ;
+  border-radius: 40px;
+  font-weight: 600;
+  background-color: #fff;
+}
+
+.sell-like-btn:hover {
+  background-color: #000;
+  color: #fff ;
+  text-decoration: none;
+}
+

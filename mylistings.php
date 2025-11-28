@@ -29,6 +29,7 @@ $sql = "
     i.item_id,
     i.title,
     i.description,
+    i.image_path,
     COALESCE(a.currentHighestBid, a.start_price) AS price,
     a.end_time,
     a.status,
@@ -37,7 +38,7 @@ $sql = "
   JOIN items i ON a.item_id = i.item_id
   LEFT JOIN bid_record br ON a.auction_id = br.auction_id
   WHERE i.seller_id = ?
-  GROUP BY i.item_id, i.title, i.description, price, a.end_time, a.status
+  GROUP BY i.item_id, i.title, i.description, i.image_path, price, a.end_time, a.status
   ORDER BY a.end_time DESC
 ";
 
@@ -48,27 +49,61 @@ $list_res = $list_stmt->get_result();
 ?>
 
 <div class="container mt-4">
-  <h2 class="my-3">My listings</h2>
+  <h2 class="my-3">Sales record</h2>
 
-  <ul class="list-group">
 <?php
 if ($list_res->num_rows === 0) {
-  echo '<li class="list-group-item">You have not created any auctions yet.</li>';
+  echo '<div class="browse-empty mt-3">You have not created any auctions yet.</div>';
 } else {
-  while ($row = $list_res->fetch_assoc()) {
-    $item_id      = $row['item_id'];
-    $title        = $row['title'];
-    $description  = $row['description'];
-    $current_price= $row['price'];
-    $num_bids     = $row['num_bids'];
-    $end_date     = new DateTime($row['end_time']);
+  echo '<div class="browse-list mt-3">';
+  $now = new DateTime();
 
-    print_listing_li($item_id, $title, $description, $current_price, $num_bids, $end_date);
+  while ($row = $list_res->fetch_assoc()) {
+    $item_id       = $row['item_id'];
+    $title         = $row['title'];
+    $description   = $row['description'];
+    $image_path    = $row['image_path'] ?: 'img/items/default.png';
+    $current_price = (float)$row['price'];
+    $num_bids      = (int)$row['num_bids'];
+    $end_date      = new DateTime($row['end_time']);
+
+    if ($end_date > $now) {
+      $time_to_end = date_diff($now, $end_date);
+      $meta_text = $num_bids . ' bid' . ($num_bids == 1 ? '' : 's') . ' · ' . display_time_remaining($time_to_end) . ' remaining';
+    } else {
+      $meta_text = $num_bids . ' bid' . ($num_bids == 1 ? '' : 's') . ' · Auction ended';
+    }
+    ?>
+    <div class="browse-item">
+
+      <div class="browse-thumb">
+        <img src="<?php echo htmlspecialchars($image_path); ?>">
+      </div>
+
+      <div class="browse-info-row">
+        <div class="browse-info-left">
+          <a href="listing.php?item_id=<?php echo $item_id; ?>" class="browse-title">
+            <?php echo htmlspecialchars($title); ?>
+          </a>
+          <div class="browse-sub"><?php echo htmlspecialchars($description); ?></div>
+        </div>
+
+        <div class="browse-info-right">
+          <div class="browse-price">£<?php echo number_format($current_price, 2); ?></div>
+          <div class="browse-meta"><?php echo $meta_text; ?></div>
+        </div>
+      </div>
+
+    </div>
+    <?php
   }
+
+  echo '</div>';
 }
+
 $list_stmt->close();
 ?>
-  </ul>
+
 </div>
 
 <?php include_once("footer.php") ?>

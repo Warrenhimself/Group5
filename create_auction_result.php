@@ -37,13 +37,11 @@ if ($end_time_in === null || $end_time_in === '') {
 }
 
 
-// 读取表单里的时间
-$start_time_in = $_POST['start_time'] ?? '';   // datetime-local
+$start_time_in = $_POST['start_time'] ?? ''; 
 $end_time_in   = $_POST['end_time']   ?? '';
 
 $errors = [];
 
-// ------- 基本必填校验 -------
 if ($start_time_in === '') {
     $errors[] = "Start date is required.";
 }
@@ -57,7 +55,6 @@ if ($start_time_in !== '' && $end_time_in !== '') {
     $end_ts   = strtotime($end_time_in);
     $now_ts   = time();
 
-    // 允许 “从现在起几秒内” 开始，给 60 秒的容忍度，避免你点按钮时刚好过秒
     if ($start_ts < $now_ts - 60) {
         $errors[] = "Start date must be in the future.";
     }
@@ -66,7 +63,7 @@ if ($start_time_in !== '' && $end_time_in !== '') {
         $errors[] = "End date must be after start date.";
     }
 
-    // 只在没有错误时，才真正转换成 MySQL DATETIME 字符串
+
     if (empty($errors)) {
         $start_time = date('Y-m-d H:i:s', $start_ts);
         $end_time   = date('Y-m-d H:i:s', $end_ts);

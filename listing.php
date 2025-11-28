@@ -159,7 +159,7 @@ if ($has_session) {
       <p>No winner (no valid winning bid or reserve not met).</p>
 <?php endif; ?>
 
-<?php else:  // 已开始且未结束，活跃中 ?>
+<?php else:   ?>
 
       <p>
         Auction ends <?php echo $end_time->format('j M Y H:i') . $time_remaining; ?>

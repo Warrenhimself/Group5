@@ -13,7 +13,7 @@ $item_id = (int)$_GET['item_id'];
 /** @var mysqli $mysqli */
 $sql = "
   SELECT 
-    i.item_id,
+    i.item_id, 
     i.title,
     i.description,
     i.image_path,
@@ -93,99 +93,165 @@ if ($has_session) {
 }
 ?>
 
-<div class="container">
+<div class="container my-4 listing-page">
 
   <div class="row">
-    <div class="col-sm-8">
-      <h2 class="my-3"><?php echo htmlspecialchars($title); ?></h2>
-      <p class="text-muted">
-        Starts: <?php echo $start_time->format('j M Y H:i'); ?> |
+    <div class="col-md-8">
+
+      <div class="text-muted small mb-1">
+        Auction · Item
+      </div>
+
+      <h1 class="lp-title mb-1">
+        <?php echo htmlspecialchars($title); ?>
+      </h1>
+
+      <div class="lp-subtitle text-muted mb-3">
+        Starts: <?php echo $start_time->format('j M Y H:i'); ?> ·
         Ends: <?php echo $end_time->format('j M Y H:i'); ?>
-      </p>
-    </div>
-
-    <div class="col-sm-4 align-self-center">
-<?php if ($has_started && !$has_ended && $status === 'active'): ?>
-      <div id="watch_nowatch" <?php if ($has_session && $watching) echo 'style="display:none"';?>>
-        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addToWatchlist()">+ Add to watchlist</button>
       </div>
-      <div id="watch_watching" <?php if (!$has_session || !$watching) echo 'style="display:none"';?>>
-        <button type="button" class="btn btn-success btn-sm" disabled>Watching</button>
-        <button type="button" class="btn btn-danger btn-sm" onclick="removeFromWatchlist()">Remove watch</button>
-      </div>
-<?php endif; ?>
-    </div>
-  </div>
 
-  <div class="row mt-3">
-
-    <div class="col-sm-8">
       <?php if (!empty($image_path)): ?>
-        <img src="<?php echo htmlspecialchars($image_path); ?>" 
-             alt="Item image"
-             class="auction-item-image">
+        <div class="lp-image-main mb-3">
+          <img src="<?php echo htmlspecialchars($image_path); ?>"
+               alt="Item image"
+               class="auction-item-image">
+        </div>
       <?php endif; ?>
 
-      <div class="itemDescription">
-        <?php echo nl2br(htmlspecialchars($description)); ?>
+      <div class="card lp-desc">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Item description</h2>
+          <p class="mb-0 itemDescription">
+            <?php echo nl2br(htmlspecialchars($description)); ?>
+          </p>
+        </div>
       </div>
+
     </div>
 
-    <div class="col-sm-4">
+    <div class="col-md-4">
+      <div class="card lp-side">
+        <div class="card-body">
 
-<?php if (!$has_started): ?>
+          <?php if (!$has_started): ?>
 
-      <p class="font-weight-bold">
-        Auction has not started yet.
-      </p>
-      <p>
-        Starts on <?php echo $start_time->format('j M Y H:i'); ?>.
-      </p>
-      <p class="text-muted">
-        Bidding and watchlist will be available after the start time.
-      </p>
+            <div class="lp-price-block mb-3">
+              <div class="lp-price-label text-muted small">
+                Auction status
+              </div>
+              <div class="lp-price text-muted">
+                Not started
+              </div>
+            </div>
 
-<?php elseif ($has_ended): ?>
+            <p class="mb-1">
+              Starts on <?php echo $start_time->format('j M Y H:i'); ?>.
+            </p>
+            <p class="text-muted small mb-0">
+              Bidding and watchlist will be available after the start time.
+            </p>
 
-      <p>
-        Auction ended on <?php echo $end_time->format('j M Y H:i'); ?> – 
-        <?php echo $num_bids; ?> bid<?php echo $num_bids == 1 ? '' : 's'; ?>.
-      </p>
-      <p class="lead">Final price: £<?php echo number_format($current_price, 2); ?></p>
+          <?php elseif ($has_ended): ?>
 
-<?php if ($winner_id): ?>
-      <p>Winner: <?php echo htmlspecialchars($winner_name ?: ('Buyer #' . $winner_id)); ?></p>
-<?php else: ?>
-      <p>No winner (no valid winning bid or reserve not met).</p>
-<?php endif; ?>
+            <div class="lp-price-block mb-3">
+              <div class="lp-price-label text-muted small">
+                Final price
+              </div>
+              <div class="lp-price">
+                £<?php echo number_format($current_price, 2); ?>
+              </div>
+              <div class="lp-bids text-muted small">
+                <?php echo $num_bids; ?> bid<?php echo $num_bids == 1 ? '' : 's'; ?>
+              </div>
+            </div>
 
-<?php else:   ?>
+            <p class="mb-1">
+              Auction ended on <?php echo $end_time->format('j M Y H:i'); ?>.
+            </p>
 
-      <p>
-        Auction ends <?php echo $end_time->format('j M Y H:i') . $time_remaining; ?>
-      </p>
-      <p class="lead">Current bid: £<?php echo number_format($current_price, 2); ?></p>
-      <p><?php echo $num_bids; ?> bid<?php echo $num_bids == 1 ? '' : 's'; ?></p>
+            <?php if ($winner_id): ?>
+              <p class="mb-0">
+                Winner:
+                <?php echo htmlspecialchars($winner_name ?: ('Buyer #' . $winner_id)); ?>
+              </p>
+            <?php else: ?>
+              <p class="mb-0">
+                No winner (no valid winning bid or reserve not met).
+              </p>
+            <?php endif; ?>
 
-<?php if ($has_session && isset($_SESSION['account_type']) && $_SESSION['account_type'] === 'buyer'): ?>
-      <hr>
-      <h5>Place a bid</h5>
-      <form method="POST" action="place_bid.php">
-        <input type="hidden" name="auction_id" value="<?php echo $auction_id; ?>">
-        <div class="input-group mb-2">
-          <div class="input-group-prepend">
-            <span class="input-group-text">£</span>
-          </div>
-          <input type="number" class="form-control" name="bid_amount" step="0.01" min="0" required>
+          <?php else: ?>
+
+            <div class="lp-price-block mb-3">
+              <div class="lp-price-label text-muted small">
+                Current price
+              </div>
+              <div class="lp-price">
+                £<?php echo number_format($current_price, 2); ?>
+              </div>
+              <div class="lp-bids text-muted small">
+                <?php echo $num_bids; ?> bid<?php echo $num_bids == 1 ? '' : 's'; ?> ·
+                ends <?php echo $end_time->format('j M Y H:i') . $time_remaining; ?>
+              </div>
+            </div>
+
+            <?php if ($has_session && isset($_SESSION['account_type']) && $_SESSION['account_type'] === 'buyer'): ?>
+              <hr>
+              <h5 class="mb-2">Place a bid</h5>
+              <form method="POST" action="place_bid.php">
+                <input type="hidden" name="auction_id" value="<?php echo $auction_id; ?>">
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">£</span>
+                  </div>
+                  <input type="number"
+                         class="form-control"
+                         name="bid_amount"
+                         step="0.01"
+                         min="0"
+                         required>
+                </div>
+                <button type="submit"
+                        class="btn btn-primary btn-ebay btn-block mt-1">
+                  Place bid
+                </button>
+              </form>
+            <?php else: ?>
+              <p class="text-muted small mb-0">
+                You must be logged in as a buyer to place a bid.
+              </p>
+            <?php endif; ?>
+
+            <?php if ($has_session): ?>
+              <div class="mt-3">
+                <div id="watch_nowatch"<?php if ($watching) echo ' style="display:none"'; ?>>
+                  <button type="button"
+                          class="btn btn-watchlist-pill"
+                          onclick="addToWatchlist()">
+                    <span class="watchlist-icon">&#9825;</span>
+                    Add to watchlist
+                  </button>
+                </div>
+                <div id="watch_watching"<?php if (!$watching) echo ' style="display:none"'; ?>>
+                  <button type="button"
+                          class="btn btn-watchlist-pill watchlist-on"
+                          disabled>
+                    &#9829; Watching
+                  </button>
+                  <button type="button"
+                          class="btn btn-link btn-sm text-danger mt-1"
+                          onclick="removeFromWatchlist()">
+                    Remove from watchlist
+                  </button>
+                </div>
+              </div>
+            <?php endif; ?>
+
+          <?php endif; ?>
+
         </div>
-        <button type="submit" class="btn btn-primary form-control">Place bid</button>
-      </form>
-<?php else: ?>
-      <p class="text-muted">You must be logged in as a buyer to place a bid.</p>
-<?php endif; ?>
-
-<?php endif; ?>
-
+      </div>
     </div>
   </div>
 </div>

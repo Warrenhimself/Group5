@@ -33,14 +33,22 @@ $sql = "
     i.item_id,
     i.title,
     i.description,
-    COALESCE(a.currentHighestBid, a.start_price) AS price,
+    i.image_path,
+    COALESCE(a.currentHighestBid, a.start_price) AS current_price,
+    MAX(br.bid_amount) AS my_bid,
     a.end_time,
     COUNT(br.bid_id) AS num_bids
   FROM bid_record br
   JOIN auctions a ON br.auction_id = a.auction_id
   JOIN items i ON a.item_id = i.item_id
   WHERE br.buyer_id = ?
-  GROUP BY i.item_id, i.title, i.description, price, a.end_time
+  GROUP BY 
+    i.item_id,
+    i.title,
+    i.description,
+    i.image_path,
+    current_price,
+    a.end_time
   ORDER BY a.end_time DESC
 ";
 
@@ -51,24 +59,56 @@ $result = $stmt->get_result();
 $stmt->close();
 ?>
 
-<ul class="list-group mt-3">
 <?php
 if ($result->num_rows === 0) {
-  echo '<li class="list-group-item">You have not placed any bids yet.</li>';
+  echo '<div class="mybids-empty mt-3">You have not placed any bids yet.</div>';
 } else {
+  echo '<div class="mybids-list mt-3">';
+  $now = new DateTime();
   while ($row = $result->fetch_assoc()) {
-    $item_id      = $row['item_id'];
-    $title        = $row['title'];
-    $description  = $row['description'];
-    $current_price= $row['price'];
-    $num_bids     = $row['num_bids'];
-    $end_date     = new DateTime($row['end_time']);
+    $item_id       = $row['item_id'];
+    $title         = $row['title'];
+    $description   = $row['description'];
+    $image_path    = $row['image_path'] ?: "img/items/default.png";
+    $current_price = (float)$row['current_price'];
+    $my_bid        = (float)$row['my_bid'];
+    $num_bids      = (int)$row['num_bids'];
+    $end_date      = new DateTime($row['end_time']);
 
-    print_listing_li($item_id, $title, $description, $current_price, $num_bids, $end_date);
+    if ($end_date > $now) {
+      $time_to_end = date_diff($now, $end_date);
+      $time_remain_str = display_time_remaining($time_to_end);
+      $time_text = $time_remain_str . " remaining";
+    } else {
+      $time_text = "Auction ended";
+    }
+    ?>
+    <a class="mybids-row" href="listing.php?item_id=<?php echo $item_id; ?>">
+
+      <div class="mybids-thumb">
+        <img src="<?php echo htmlspecialchars($image_path); ?>" alt="">
+      </div>
+
+      <div class="mybids-info">
+        <div class="mybids-title"><?php echo htmlspecialchars($title); ?></div>
+        <div class="mybids-desc"><?php echo htmlspecialchars($description); ?></div>
+      </div>
+
+      <div class="mybids-right">
+        <div class="mybids-price">£<?php echo number_format($current_price, 2); ?></div>
+        <div class="mybids-yourbid">Your bid: £<?php echo number_format($my_bid, 2); ?></div>
+        <div class="mybids-meta">
+          <?php echo $num_bids; ?> bid<?php echo $num_bids == 1 ? '' : 's'; ?><br>
+          <?php echo htmlspecialchars($time_text); ?>
+        </div>
+      </div>
+
+    </a>
+    <?php
   }
+  echo '</div>';
 }
 ?>
-</ul>
 
 </div>
 

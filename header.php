@@ -61,7 +61,7 @@ if ($mysqli->connect_errno) {
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <ul class="navbar-nav align-middle">
 	<li class="nav-item mx-1">
-      <a class="nav-link" href="browse.php">Browse</a>
+      <a class="nav-link" href="browse.php">Homepage</a>
     </li>
 <?php
 if (isset($_SESSION['account_type']) && $_SESSION['account_type'] == 'buyer') {

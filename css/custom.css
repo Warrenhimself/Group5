@@ -1,9 +1,534 @@
-img.auction-item-image {
-  width: 100%;
-  max-width: 400px;
-  height: 300px;
-  object-fit: cover;
+.auction-item-image {
   display: block;
-  margin-bottom: 15px;
-  border-radius: 6px;
+  max-width: 700px;   
+  max-height: 400px; 
+  width: auto;
+  height: auto; 
+  margin: 0 auto 16px; 
+  object-fit: contain; 
+}
+
+.listing-page {
+  background-color: #f5f5f5;
+  padding-top: 8px;
+  padding-bottom: 24px;
+}
+
+
+.lp-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+.lp-subtitle {
+  font-size: 14px;
+  color: #666;
+}
+
+
+.lp-image-main {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.lp-desc {
+  border-radius: 8px;
+}
+
+.lp-side {
+  margin-top: 93px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.lp-price-block .lp-price-label {
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.lp-price {
+  font-size: 50px;
+  font-weight: 700;
+}
+.lp-bids {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #707070;
+}
+
+.btn-ebay {
+  background-color: #3665f3;
+  border-color: #3665f3;
+  font-weight: 600;
+  border-radius: 24px;
+  padding: 8px 18px;
+}
+.btn-ebay:hover {
+  background-color: #1450f0;
+  border-color: #1450f0;
+}
+
+.btn-watchlist-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid #3665f3;
+  background-color: #ffffff;
+  color: #3665f3;
+  font-weight: 600;
+  padding: 10px 18px;
+  font-size: 14px;
+}
+
+.btn-watchlist-pill .watchlist-icon {
+  margin-right: 6px;
+  font-size: 16px;
+}
+
+.btn-watchlist-pill:hover {
+  background-color: #f0f5ff;
+  color: #1450f0;
+  border-color: #1450f0;
+  text-decoration: none;
+}
+
+.btn-watchlist-pill.watchlist-on {
+  background-color: #3665f3;
+  color: #ffffff;
+}
+
+.browse-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.browse-item {
+  display: flex;
+  gap: 24px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  text-decoration: none;
+  color: inherit;
+  align-items: flex-start;
+  min-height: 200px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+.browse-thumb {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+
+.browse-thumb img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  background-color: #f8f8f8;
+  border-radius: 10px;
+}
+
+.browse-info {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.browse-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.browse-sub {
+  font-size: 14px;
+  color: #707070;
+  margin-bottom: 10px;
+}
+
+.browse-price {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.browse-meta {
+  font-size: 14px;
+  color: #707070;
+}
+
+
+.browse-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.browse-sub {
+  font-size: 13px;
+  color: #707070;
+  margin-bottom: 8px;
+}
+
+.browse-price-row {
+  margin-bottom: 4px;
+}
+
+.browse-price {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.browse-meta {
+  font-size: 13px;
+  color: #707070;
+}
+
+.browse-empty {
+  padding: 24px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e3e3e3;
+  margin-bottom: 24px;
+}
+
+.browse-info-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+}
+
+.browse-info-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.browse-info-right {
+  text-align: right;
+  min-width: 120px;
+}
+
+.browse-price {
+  font-size: 25px;
+  font-weight: 600;
+  color: #000;
+  white-space: nowrap;
+}
+
+.browse-title {
+  font-size: 25px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.browse-sub {
+  font-size: 16px;
+  color: #707070;
+  margin-bottom: 8px;
+}
+
+.browse-meta {
+  font-size: 16px;
+  color: #707070;
+}
+
+.watchlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.watch-row {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e0e0e0;
+}
+
+.watch-thumb {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.watch-thumb img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.watch-info {
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+}
+
+.watch-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.watch-sub {
+  font-size: 14px;
+  color: #707070;
+  margin-bottom: 6px;
+}
+
+.watch-price {
+  font-size: 25px;    
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 6px;
+}
+
+.watch-meta {
+  font-size: 18px;    
+  font-weight: 600;
+  color: #222;
+}
+
+
+.watch-actions {
+  width: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-watch-primary {
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  background-color: #3665f3;
+  border: 1px solid #3665f3;
+  color: #ffffff;
+}
+
+.btn-watch-primary:hover {
+  background-color: #1450f0;
+  border-color: #1450f0;
+  color: #ffffff;
+}
+
+.watchlist-empty {
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.mybids-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mybids-row {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e0e0e0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.mybids-row:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.mybids-thumb {
+  width: 180px;
+  flex-shrink: 0;
+}
+
+.mybids-thumb img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.mybids-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mybids-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.mybids-desc {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.mybids-right {
+  width: 210px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.mybids-price {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.mybids-yourbid {
+  font-size: 16px;
+  font-weight: 600;
+  color: #3665f3;
+}
+
+.mybids-meta {
+  font-size: 14px;
+  color: #555;
+}
+
+.mybids-empty {
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+
+.browse-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+.browse-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  padding: 18px;
+  text-decoration: none;
+  color: #000;
+  transition: box-shadow 0.15s ease;
+}
+
+.browse-item:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+.browse-thumb {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f6f6f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.browse-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.browse-info-row {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.browse-info-left {
+  flex: 1;
+}
+
+
+.browse-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 6px;
+}
+
+
+.browse-sub {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.browse-meta {
+  font-size: 13px;
+  color: #777;
+}
+
+.browse-info-right {
+  min-width: 140px;
+  text-align: right;
+}
+
+.browse-price {
+  font-size: 26px;
+  font-weight: 700;
+  color: #000;
+}
+
+.browse-empty {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  padding: 20px;
+}
+
+.btn-view {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 2px solid #3665f3;
+  color: #3665f3;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.btn-view:hover {
+  background-color: #3665f3;
+  color: #fff;
 }

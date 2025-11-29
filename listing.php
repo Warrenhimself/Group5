@@ -24,17 +24,21 @@ $sql = "
     a.status,
     COUNT(br.bid_id) AS num_bids,
     a.winnerId,
-    u.display_name AS winner_name
+    u.display_name AS winner_name,
+    i.seller_id,
+    s.user_id AS seller_user_id
   FROM items i
   JOIN auctions a ON i.item_id = a.item_id
   LEFT JOIN bid_record br ON a.auction_id = br.auction_id
   LEFT JOIN buyers b ON a.winnerId = b.buyer_id
   LEFT JOIN users  u ON b.user_id  = u.user_id
+  JOIN sellers s ON i.seller_id = s.seller_id
   WHERE i.item_id = ?
   GROUP BY 
     i.item_id, i.title, i.description, i.image_path,
     a.auction_id, current_price, a.start_price,
-    a.start_time, a.end_time, a.status, a.winnerId, u.display_name
+    a.start_time, a.end_time, a.status, a.winnerId, u.display_name,
+    i.seller_id, s.user_id
   LIMIT 1
 ";
 
@@ -64,8 +68,59 @@ $end_time      = new DateTime($row['end_time']);
 $status        = $row['status'];
 $winner_id     = $row['winnerId'];
 $winner_name   = $row['winner_name'];
+$seller_user_id = (int)$row['seller_user_id'];
 
 $now = new DateTime();
+
+if ($now > $end_time && $status === 'active') {
+  $win_stmt = $mysqli->prepare("
+    SELECT buyer_id, bid_amount
+    FROM bid_record
+    WHERE auction_id = ?
+    ORDER BY bid_amount DESC, bid_time ASC
+    LIMIT 1
+  ");
+  $win_stmt->bind_param("i", $auction_id);
+  $win_stmt->execute();
+  $win_res = $win_stmt->get_result();
+
+  if ($win_res->num_rows > 0) {
+    $win_row = $win_res->fetch_assoc();
+    $winner_id = (int)$win_row['buyer_id'];
+    $final_price = (float)$win_row['bid_amount'];
+
+    $upd = $mysqli->prepare("UPDATE auctions SET status = 'ended', winnerId = ?, currentHighestBid = ? WHERE auction_id = ?");
+    $upd->bind_param("idi", $winner_id, $final_price, $auction_id);
+    $upd->execute();
+    $upd->close();
+
+    $name_stmt = $mysqli->prepare("
+      SELECT u.display_name
+      FROM buyers b
+      JOIN users u ON b.user_id = u.user_id
+      WHERE b.buyer_id = ?
+      LIMIT 1
+    ");
+    $name_stmt->bind_param("i", $winner_id);
+    $name_stmt->execute();
+    $name_res = $name_stmt->get_result();
+    if ($name_res->num_rows > 0) {
+      $name_row = $name_res->fetch_assoc();
+      $winner_name = $name_row['display_name'];
+    }
+    $name_stmt->close();
+
+    $current_price = $final_price;
+  } else {
+    $upd = $mysqli->prepare("UPDATE auctions SET status = 'ended', winnerId = NULL WHERE auction_id = ?");
+    $upd->bind_param("i", $auction_id);
+    $upd->execute();
+    $upd->close();
+    $winner_id = null;
+  }
+
+  $status = 'ended';
+}
 
 $has_started = ($now >= $start_time);
 $has_ended   = ($now > $end_time || $status !== 'active');

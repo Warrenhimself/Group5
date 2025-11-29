@@ -25,7 +25,7 @@ if ($bres->num_rows === 0) {
   exit();
 }
 $buyer = $bres->fetch_assoc();
-$buyer_id = $buyer['buyer_id'];
+$buyer_id = (int)$buyer['buyer_id'];
 $bstmt->close();
 
 $sql = "
@@ -37,6 +37,8 @@ $sql = "
     COALESCE(a.currentHighestBid, a.start_price) AS current_price,
     MAX(br.bid_amount) AS my_bid,
     a.end_time,
+    a.status,
+    a.winnerId,
     COUNT(br.bid_id) AS num_bids
   FROM bid_record br
   JOIN auctions a ON br.auction_id = a.auction_id
@@ -48,8 +50,10 @@ $sql = "
     i.description,
     i.image_path,
     current_price,
-    a.end_time
-  ORDER BY a.end_time DESC
+    a.end_time,
+    a.status,
+    a.winnerId
+  ORDER BY a.end_time ASC
 ";
 
 $stmt = $mysqli->prepare($sql);
@@ -74,6 +78,10 @@ if ($result->num_rows === 0) {
     $my_bid        = (float)$row['my_bid'];
     $num_bids      = (int)$row['num_bids'];
     $end_date      = new DateTime($row['end_time']);
+    $status        = $row['status'];
+    $winner_id     = $row['winnerId'];
+
+    $has_ended = ($now > $end_date || $status !== 'active');
 
     if ($end_date > $now) {
       $time_to_end = date_diff($now, $end_date);
@@ -81,6 +89,20 @@ if ($result->num_rows === 0) {
       $time_text = $time_remain_str . " remaining";
     } else {
       $time_text = "Auction ended";
+    }
+
+    if ($has_ended) {
+      if (!is_null($winner_id) && (int)$winner_id === $buyer_id) {
+        $status_text = "You won this auction";
+      } else {
+        $status_text = "You did not win";
+      }
+    } else {
+      if ($num_bids > 0 && $my_bid == $current_price) {
+        $status_text = "You are the highest bidder";
+      } else {
+        $status_text = "You have been outbid";
+      }
     }
     ?>
     <a class="mybids-row" href="listing.php?item_id=<?php echo $item_id; ?>">
@@ -100,6 +122,9 @@ if ($result->num_rows === 0) {
         <div class="mybids-meta">
           <?php echo $num_bids; ?> bid<?php echo $num_bids == 1 ? '' : 's'; ?><br>
           <?php echo htmlspecialchars($time_text); ?>
+        </div>
+        <div class="mybids-status">
+          <?php echo htmlspecialchars($status_text); ?>
         </div>
       </div>
 

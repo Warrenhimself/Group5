@@ -11,7 +11,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || $_SESSI
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' ||
-    !isset($_POST['auction_id']) || !isset($_POST['bid_amount'])) {
+    !isset($_POST['auction_id']) || !isset($_POST['bid_amount']) ||
+    !ctype_digit($_POST['auction_id'])) {
   echo '<div class="container mt-4"><div class="alert alert-danger">
           Invalid bid request.
         </div></div>';
@@ -30,13 +31,13 @@ if ($bid_amount <= 0) {
   exit();
 }
 
-
 $sql = "
   SELECT 
     a.auction_id,
     a.item_id,
     a.start_price,
     a.currentHighestBid,
+    a.start_time,
     a.end_time,
     a.status,
     i.seller_id,
@@ -65,12 +66,12 @@ if ($res->num_rows === 0) {
 $auction = $res->fetch_assoc();
 $stmt->close();
 
-$now      = new DateTime();
-$end_time = new DateTime($auction['end_time']);
+$now        = new DateTime();
+$start_time = new DateTime($auction['start_time']);
+$end_time   = new DateTime($auction['end_time']);
 
-
-$current_user_id   = (int)$_SESSION['user_id'];
-$seller_user_id    = (int)$auction['seller_user_id'];
+$current_user_id = (int)$_SESSION['user_id'];
+$seller_user_id  = (int)$auction['seller_user_id'];
 
 if ($current_user_id === $seller_user_id) {
   echo '<div class="container mt-4"><div class="alert alert-danger">
@@ -80,6 +81,13 @@ if ($current_user_id === $seller_user_id) {
   exit();
 }
 
+if ($now < $start_time) {
+  echo '<div class="container mt-4"><div class="alert alert-danger">
+          This auction has not started yet.
+        </div></div>';
+  include 'footer.php';
+  exit();
+}
 
 if ($auction['status'] !== 'active' || $now >= $end_time) {
   echo '<div class="container mt-4"><div class="alert alert-danger">
@@ -89,11 +97,9 @@ if ($auction['status'] !== 'active' || $now >= $end_time) {
   exit();
 }
 
-
 $current_price = $auction['currentHighestBid'] !== null
   ? (float)$auction['currentHighestBid']
   : (float)$auction['start_price'];
-
 
 if ($bid_amount <= $current_price) {
   echo '<div class="container mt-4"><div class="alert alert-danger">
@@ -102,7 +108,6 @@ if ($bid_amount <= $current_price) {
   include 'footer.php';
   exit();
 }
-
 
 $user_id = $current_user_id;
 
@@ -121,7 +126,6 @@ if ($bres->num_rows === 0) {
 $buyer = $bres->fetch_assoc();
 $buyer_id = (int)$buyer['buyer_id'];
 $bstmt->close();
-
 
 $ins = $mysqli->prepare("
   INSERT INTO bid_record (auction_id, buyer_id, bid_amount, bid_time)

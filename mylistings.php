@@ -26,6 +26,7 @@ $stmt->close();
 
 $sql = "
   SELECT 
+    a.auction_id,
     i.item_id,
     i.title,
     i.description,
@@ -33,13 +34,23 @@ $sql = "
     COALESCE(a.currentHighestBid, a.start_price) AS price,
     a.end_time,
     a.status,
+    a.winnerId,
     COUNT(br.bid_id) AS num_bids
   FROM auctions a
   JOIN items i ON a.item_id = i.item_id
   LEFT JOIN bid_record br ON a.auction_id = br.auction_id
   WHERE i.seller_id = ?
-  GROUP BY i.item_id, i.title, i.description, i.image_path, price, a.end_time, a.status
-   ORDER BY (a.status = 'active') DESC,
+  GROUP BY 
+    a.auction_id,
+    i.item_id,
+    i.title,
+    i.description,
+    i.image_path,
+    price,
+    a.end_time,
+    a.status,
+    a.winnerId
+  ORDER BY (a.status = 'active') DESC,
            a.end_time ASC,
            a.auction_id DESC
 ";
@@ -68,12 +79,23 @@ if ($list_res->num_rows === 0) {
     $current_price = (float)$row['price'];
     $num_bids      = (int)$row['num_bids'];
     $end_date      = new DateTime($row['end_time']);
+    $status        = $row['status'];
+    $winner_id     = $row['winnerId'];
 
-    if ($end_date > $now) {
+    $has_ended = ($now > $end_date || $status !== 'active');
+
+    if (!$has_ended) {
       $time_to_end = date_diff($now, $end_date);
-      $meta_text = $num_bids . ' bid' . ($num_bids == 1 ? '' : 's') . ' · ' . display_time_remaining($time_to_end) . ' remaining';
+      $meta_text = $num_bids . ' bid' . ($num_bids == 1 ? '' : 's')
+                 . ' · ' . display_time_remaining($time_to_end) . ' remaining';
     } else {
-      $meta_text = $num_bids . ' bid' . ($num_bids == 1 ? '' : 's') . ' · Auction ended';
+      if (!is_null($winner_id)) {
+        $sale_status = 'Sold';
+      } else {
+        $sale_status = 'Not sold';
+      }
+      $meta_text = $num_bids . ' bid' . ($num_bids == 1 ? '' : 's')
+                 . ' · ' . $sale_status;
     }
     ?>
     <div class="browse-item">
@@ -92,7 +114,7 @@ if ($list_res->num_rows === 0) {
 
         <div class="browse-info-right">
           <div class="browse-price">£<?php echo number_format($current_price, 2); ?></div>
-          <div class="browse-meta"><?php echo $meta_text; ?></div>
+          <div class="browse-meta"><?php echo htmlspecialchars($meta_text); ?></div>
         </div>
       </div>
 

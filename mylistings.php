@@ -39,7 +39,9 @@ $sql = "
   LEFT JOIN bid_record br ON a.auction_id = br.auction_id
   WHERE i.seller_id = ?
   GROUP BY i.item_id, i.title, i.description, i.image_path, price, a.end_time, a.status
-  ORDER BY a.end_time DESC
+   ORDER BY (a.status = 'active') DESC,
+           a.end_time ASC,
+           a.auction_id DESC
 ";
 
 $list_stmt = $mysqli->prepare($sql);

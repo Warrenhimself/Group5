@@ -585,3 +585,27 @@
   text-decoration: none;
 }
 
+.lp-desc {
+    min-height: 220px; 
+}
+
+.lp-desc .card-body {
+    padding: 25px 30px;
+}
+
+
+.listing-page .col-md-8,
+.listing-page .col-md-4 {
+    display: flex;
+    flex-direction: column;
+}
+
+.lp-side {
+    flex-grow: 1;
+}
+
+.lp-side .card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}

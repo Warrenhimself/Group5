@@ -90,6 +90,19 @@ if ($has_session) {
   }
   $wstmt->close();
 }
+
+$bh_stmt = $mysqli->prepare("
+  SELECT br.bid_amount, br.bid_time, u.display_name
+  FROM bid_record br
+  JOIN buyers b ON br.buyer_id = b.buyer_id
+  JOIN users  u ON b.user_id = u.user_id
+  WHERE br.auction_id = ?
+  ORDER BY br.bid_time DESC
+");
+$bh_stmt->bind_param("i", $auction_id);
+$bh_stmt->execute();
+$bid_history_res = $bh_stmt->get_result();
+$bh_stmt->close();
 ?>
 
 <div class="container my-4 listing-page">
@@ -180,6 +193,20 @@ if ($has_session) {
               </p>
             <?php endif; ?>
 
+            <?php if ($bid_history_res->num_rows > 0): ?>
+              <hr>
+              <h5 class="mb-2">Bid history</h5>
+              <ul class="list-unstyled small mb-0">
+                <?php while ($bh_row = $bid_history_res->fetch_assoc()): ?>
+                  <li>
+                    <?php echo htmlspecialchars($bh_row['display_name']); ?>
+                    bid £<?php echo number_format($bh_row['bid_amount'], 2); ?>
+                    at <?php echo (new DateTime($bh_row['bid_time']))->format('j M Y H:i'); ?>
+                  </li>
+                <?php endwhile; ?>
+              </ul>
+            <?php endif; ?>
+
           <?php else: ?>
 
             <div class="lp-price-block mb-3">
@@ -245,6 +272,20 @@ if ($has_session) {
                   </button>
                 </div>
               </div>
+            <?php endif; ?>
+
+            <?php if ($bid_history_res->num_rows > 0): ?>
+              <hr>
+              <h5 class="mb-2">Bid history</h5>
+              <ul class="list-unstyled small mb-0">
+                <?php while ($bh_row = $bid_history_res->fetch_assoc()): ?>
+                  <li>
+                    <?php echo htmlspecialchars($bh_row['display_name']); ?>
+                    bid £<?php echo number_format($bh_row['bid_amount'], 2); ?>
+                    at <?php echo (new DateTime($bh_row['bid_time']))->format('j M Y H:i'); ?>
+                  </li>
+                <?php endwhile; ?>
+              </ul>
             <?php endif; ?>
 
           <?php endif; ?>
